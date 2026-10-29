@@ -1,0 +1,18 @@
+# Go build output
+/bin/
+/dist/
+*.test
+*.out
+coverage.*
+profile.*
+
+# Node
+web/node_modules/
+web/dist/
+web/.vite/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
