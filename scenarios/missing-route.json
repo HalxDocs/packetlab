@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "id": "missing-route",
+  "name": "Missing route",
+  "description": "Host A has no route to Host B, so the packet is dropped before it ever reaches a link.",
+  "seed": 42,
+  "nodes": [
+    {
+      "id": "host-a",
+      "kind": "host",
+      "name": "Host A",
+      "interfaces": [
+        { "id": "host-a:eth0", "address": "10.0.1.10/24" }
+      ]
+    },
+    {
+      "id": "router-r1",
+      "kind": "router",
+      "name": "Router R1",
+      "interfaces": [
+        { "id": "router-r1:eth0", "address": "10.0.1.1/24" },
+        { "id": "router-r1:eth1", "address": "10.0.2.1/24" }
+      ],
+      "routes": [
+        { "network": "10.0.1.0/24", "interface": "router-r1:eth0" },
+        { "network": "10.0.2.0/24", "interface": "router-r1:eth1" }
+      ]
+    },
+    {
+      "id": "host-b",
+      "kind": "host",
+      "name": "Host B",
+      "interfaces": [
+        { "id": "host-b:eth0", "address": "10.0.2.20/24" }
+      ],
+      "routes": [
+        { "network": "0.0.0.0/0", "nextHop": "10.0.2.1", "interface": "host-b:eth0" }
+      ]
+    }
+  ],
+  "links": [
+    { "id": "link-a", "a": "host-a:eth0", "b": "router-r1:eth0", "delayMs": 1 },
+    { "id": "link-b", "a": "router-r1:eth1", "b": "host-b:eth0", "delayMs": 1 }
+  ],
+  "actions": [
+    { "atMs": 0, "kind": "send_ping", "from": "host-a", "to": "10.0.2.20" }
+  ]
+}
