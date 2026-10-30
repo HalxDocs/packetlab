@@ -1,0 +1,462 @@
+{
+  "schemaVersion": "1.0",
+  "scenario": {
+    "schemaVersion": "1.0",
+    "id": "ttl-loop",
+    "name": "TTL loop",
+    "description": "R1 and R2 route 10.9.9.9 at each other. A TTL of 3 stops the loop after three routed hops.",
+    "seed": 42,
+    "nodes": [
+      {
+        "id": "host-a",
+        "kind": "host",
+        "name": "Host A",
+        "interfaces": [
+          {
+            "id": "host-a:eth0",
+            "address": "10.0.1.10/24"
+          }
+        ],
+        "routes": [
+          {
+            "network": "0.0.0.0/0",
+            "nextHop": "10.0.1.1",
+            "interface": "host-a:eth0"
+          }
+        ]
+      },
+      {
+        "id": "router-r1",
+        "kind": "router",
+        "name": "Router R1",
+        "interfaces": [
+          {
+            "id": "router-r1:eth0",
+            "address": "10.0.1.1/24"
+          },
+          {
+            "id": "router-r1:eth1",
+            "address": "10.0.2.1/24"
+          }
+        ],
+        "routes": [
+          {
+            "network": "10.0.1.0/24",
+            "interface": "router-r1:eth0"
+          },
+          {
+            "network": "10.0.2.0/24",
+            "interface": "router-r1:eth1"
+          },
+          {
+            "network": "10.9.9.9/32",
+            "nextHop": "10.0.2.2",
+            "interface": "router-r1:eth1"
+          }
+        ]
+      },
+      {
+        "id": "router-r2",
+        "kind": "router",
+        "name": "Router R2",
+        "interfaces": [
+          {
+            "id": "router-r2:eth0",
+            "address": "10.0.2.2/24"
+          }
+        ],
+        "routes": [
+          {
+            "network": "10.0.2.0/24",
+            "interface": "router-r2:eth0"
+          },
+          {
+            "network": "10.9.9.9/32",
+            "nextHop": "10.0.2.1",
+            "interface": "router-r2:eth0"
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "id": "link-a",
+        "a": "host-a:eth0",
+        "b": "router-r1:eth0",
+        "delayMs": 1
+      },
+      {
+        "id": "link-b",
+        "a": "router-r1:eth1",
+        "b": "router-r2:eth0",
+        "delayMs": 1
+      }
+    ],
+    "actions": [
+      {
+        "atMs": 0,
+        "kind": "send_ping",
+        "from": "host-a",
+        "to": "10.9.9.9",
+        "ttl": 3
+      }
+    ]
+  },
+  "topology": {
+    "nodes": [
+      {
+        "id": "host-a",
+        "name": "Host A",
+        "kind": "host",
+        "interfaces": [
+          {
+            "id": "host-a:eth0",
+            "node": "host-a",
+            "address": "10.0.1.10/24",
+            "subnet": "10.0.1.0/24"
+          }
+        ],
+        "routes": [
+          {
+            "network": "0.0.0.0/0",
+            "nextHop": "10.0.1.1",
+            "interface": "host-a:eth0"
+          }
+        ]
+      },
+      {
+        "id": "router-r1",
+        "name": "Router R1",
+        "kind": "router",
+        "interfaces": [
+          {
+            "id": "router-r1:eth0",
+            "node": "router-r1",
+            "address": "10.0.1.1/24",
+            "subnet": "10.0.1.0/24"
+          },
+          {
+            "id": "router-r1:eth1",
+            "node": "router-r1",
+            "address": "10.0.2.1/24",
+            "subnet": "10.0.2.0/24"
+          }
+        ],
+        "routes": [
+          {
+            "network": "10.0.1.0/24",
+            "interface": "router-r1:eth0"
+          },
+          {
+            "network": "10.0.2.0/24",
+            "interface": "router-r1:eth1"
+          },
+          {
+            "network": "10.9.9.9/32",
+            "nextHop": "10.0.2.2",
+            "interface": "router-r1:eth1"
+          }
+        ]
+      },
+      {
+        "id": "router-r2",
+        "name": "Router R2",
+        "kind": "router",
+        "interfaces": [
+          {
+            "id": "router-r2:eth0",
+            "node": "router-r2",
+            "address": "10.0.2.2/24",
+            "subnet": "10.0.2.0/24"
+          }
+        ],
+        "routes": [
+          {
+            "network": "10.0.2.0/24",
+            "interface": "router-r2:eth0"
+          },
+          {
+            "network": "10.9.9.9/32",
+            "nextHop": "10.0.2.1",
+            "interface": "router-r2:eth0"
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "id": "link-a",
+        "a": "host-a:eth0",
+        "b": "router-r1:eth0",
+        "delayMs": 1,
+        "up": true
+      },
+      {
+        "id": "link-b",
+        "a": "router-r1:eth1",
+        "b": "router-r2:eth0",
+        "delayMs": 1,
+        "up": true
+      }
+    ]
+  },
+  "records": [
+    {
+      "index": 0,
+      "atMs": 0,
+      "atNs": 0,
+      "kind": "run.started",
+      "summary": "simulation started"
+    },
+    {
+      "index": 1,
+      "atMs": 0,
+      "atNs": 0,
+      "kind": "packet.created",
+      "nodeId": "host-a",
+      "packetId": "p-001",
+      "summary": "created ICMP echo request",
+      "details": {
+        "dst": "10.9.9.9",
+        "icmp": "echo_request",
+        "protocol": "icmp",
+        "src": "10.0.1.10",
+        "ttl": "3"
+      }
+    },
+    {
+      "index": 2,
+      "atMs": 0,
+      "atNs": 0,
+      "kind": "route.selected",
+      "nodeId": "host-a",
+      "packetId": "p-001",
+      "summary": "selected 0.0.0.0/0 via 10.0.1.1 on host-a:eth0",
+      "details": {
+        "interface": "host-a:eth0",
+        "metric": "0",
+        "network": "0.0.0.0/0",
+        "nextHop": "10.0.1.1"
+      }
+    },
+    {
+      "index": 3,
+      "atMs": 0,
+      "atNs": 0,
+      "kind": "link.transmit",
+      "nodeId": "host-a",
+      "linkId": "link-a",
+      "packetId": "p-001",
+      "summary": "transmitted on link-a",
+      "details": {
+        "bytes": "33",
+        "delay": "1ms",
+        "egress": "host-a:eth0",
+        "serialization": "0ms"
+      }
+    },
+    {
+      "index": 4,
+      "atMs": 1,
+      "atNs": 1000000,
+      "kind": "link.delivered",
+      "nodeId": "router-r1",
+      "linkId": "link-a",
+      "packetId": "p-001",
+      "summary": "arrived on router-r1:eth0",
+      "details": {
+        "ingress": "router-r1:eth0"
+      }
+    },
+    {
+      "index": 5,
+      "atMs": 1,
+      "atNs": 1000000,
+      "kind": "packet.received",
+      "nodeId": "router-r1",
+      "packetId": "p-001",
+      "summary": "received on router-r1:eth0",
+      "details": {
+        "ingress": "router-r1:eth0",
+        "ttl": "3"
+      }
+    },
+    {
+      "index": 6,
+      "atMs": 1,
+      "atNs": 1000000,
+      "kind": "route.selected",
+      "nodeId": "router-r1",
+      "packetId": "p-001",
+      "summary": "selected 10.9.9.9/32 via 10.0.2.2 on router-r1:eth1",
+      "details": {
+        "interface": "router-r1:eth1",
+        "metric": "0",
+        "network": "10.9.9.9/32",
+        "nextHop": "10.0.2.2"
+      }
+    },
+    {
+      "index": 7,
+      "atMs": 1,
+      "atNs": 1000000,
+      "kind": "packet.forwarded",
+      "nodeId": "router-r1",
+      "packetId": "p-001",
+      "summary": "forwarded router-r1:eth0 -\u003e router-r1:eth1",
+      "details": {
+        "egress": "router-r1:eth1",
+        "ingress": "router-r1:eth0",
+        "ttl": "2"
+      }
+    },
+    {
+      "index": 8,
+      "atMs": 1,
+      "atNs": 1000000,
+      "kind": "link.transmit",
+      "nodeId": "router-r1",
+      "linkId": "link-b",
+      "packetId": "p-001",
+      "summary": "transmitted on link-b",
+      "details": {
+        "bytes": "33",
+        "delay": "1ms",
+        "egress": "router-r1:eth1",
+        "serialization": "0ms"
+      }
+    },
+    {
+      "index": 9,
+      "atMs": 2,
+      "atNs": 2000000,
+      "kind": "link.delivered",
+      "nodeId": "router-r2",
+      "linkId": "link-b",
+      "packetId": "p-001",
+      "summary": "arrived on router-r2:eth0",
+      "details": {
+        "ingress": "router-r2:eth0"
+      }
+    },
+    {
+      "index": 10,
+      "atMs": 2,
+      "atNs": 2000000,
+      "kind": "packet.received",
+      "nodeId": "router-r2",
+      "packetId": "p-001",
+      "summary": "received on router-r2:eth0",
+      "details": {
+        "ingress": "router-r2:eth0",
+        "ttl": "2"
+      }
+    },
+    {
+      "index": 11,
+      "atMs": 2,
+      "atNs": 2000000,
+      "kind": "route.selected",
+      "nodeId": "router-r2",
+      "packetId": "p-001",
+      "summary": "selected 10.9.9.9/32 via 10.0.2.1 on router-r2:eth0",
+      "details": {
+        "interface": "router-r2:eth0",
+        "metric": "0",
+        "network": "10.9.9.9/32",
+        "nextHop": "10.0.2.1"
+      }
+    },
+    {
+      "index": 12,
+      "atMs": 2,
+      "atNs": 2000000,
+      "kind": "packet.forwarded",
+      "nodeId": "router-r2",
+      "packetId": "p-001",
+      "summary": "forwarded router-r2:eth0 -\u003e router-r2:eth0",
+      "details": {
+        "egress": "router-r2:eth0",
+        "ingress": "router-r2:eth0",
+        "ttl": "1"
+      }
+    },
+    {
+      "index": 13,
+      "atMs": 2,
+      "atNs": 2000000,
+      "kind": "link.transmit",
+      "nodeId": "router-r2",
+      "linkId": "link-b",
+      "packetId": "p-001",
+      "summary": "transmitted on link-b",
+      "details": {
+        "bytes": "33",
+        "delay": "1ms",
+        "egress": "router-r2:eth0",
+        "serialization": "0ms"
+      }
+    },
+    {
+      "index": 14,
+      "atMs": 3,
+      "atNs": 3000000,
+      "kind": "link.delivered",
+      "nodeId": "router-r1",
+      "linkId": "link-b",
+      "packetId": "p-001",
+      "summary": "arrived on router-r1:eth1",
+      "details": {
+        "ingress": "router-r1:eth1"
+      }
+    },
+    {
+      "index": 15,
+      "atMs": 3,
+      "atNs": 3000000,
+      "kind": "packet.received",
+      "nodeId": "router-r1",
+      "packetId": "p-001",
+      "summary": "received on router-r1:eth1",
+      "details": {
+        "ingress": "router-r1:eth1",
+        "ttl": "1"
+      }
+    },
+    {
+      "index": 16,
+      "atMs": 3,
+      "atNs": 3000000,
+      "kind": "packet.dropped",
+      "nodeId": "router-r1",
+      "packetId": "p-001",
+      "reason": "ttl_expired",
+      "summary": "dropped: TTL expired",
+      "details": {
+        "ingress": "router-r1:eth1",
+        "ttl": "1"
+      }
+    },
+    {
+      "index": 17,
+      "atMs": 3,
+      "atNs": 3000000,
+      "kind": "run.completed",
+      "summary": "simulation completed",
+      "details": {
+        "delivered": "0",
+        "dropped": "1",
+        "processed": "4"
+      }
+    }
+  ],
+  "result": {
+    "processed": 4,
+    "delivered": 0,
+    "dropped": 1,
+    "durationMs": 3,
+    "completed": true,
+    "limitReached": false,
+    "records": 18
+  }
+}
