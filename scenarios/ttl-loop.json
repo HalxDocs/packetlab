@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "id": "ttl-loop",
+  "name": "TTL loop",
+  "description": "R1 and R2 route 10.9.9.9 at each other. A TTL of 3 stops the loop after three routed hops.",
+  "seed": 42,
+  "nodes": [
+    {
+      "id": "host-a",
+      "kind": "host",
+      "name": "Host A",
+      "interfaces": [
+        { "id": "host-a:eth0", "address": "10.0.1.10/24" }
+      ],
+      "routes": [
+        { "network": "0.0.0.0/0", "nextHop": "10.0.1.1", "interface": "host-a:eth0" }
+      ]
+    },
+    {
+      "id": "router-r1",
+      "kind": "router",
+      "name": "Router R1",
+      "interfaces": [
+        { "id": "router-r1:eth0", "address": "10.0.1.1/24" },
+        { "id": "router-r1:eth1", "address": "10.0.2.1/24" }
+      ],
+      "routes": [
+        { "network": "10.0.1.0/24", "interface": "router-r1:eth0" },
+        { "network": "10.0.2.0/24", "interface": "router-r1:eth1" },
+        { "network": "10.9.9.9/32", "nextHop": "10.0.2.2", "interface": "router-r1:eth1" }
+      ]
+    },
+    {
+      "id": "router-r2",
+      "kind": "router",
+      "name": "Router R2",
+      "interfaces": [
+        { "id": "router-r2:eth0", "address": "10.0.2.2/24" }
+      ],
+      "routes": [
+        { "network": "10.0.2.0/24", "interface": "router-r2:eth0" },
+        { "network": "10.9.9.9/32", "nextHop": "10.0.2.1", "interface": "router-r2:eth0" }
+      ]
+    }
+  ],
+  "links": [
+    { "id": "link-a", "a": "host-a:eth0", "b": "router-r1:eth0", "delayMs": 1 },
+    { "id": "link-b", "a": "router-r1:eth1", "b": "router-r2:eth0", "delayMs": 1 }
+  ],
+  "actions": [
+    { "atMs": 0, "kind": "send_ping", "from": "host-a", "to": "10.9.9.9", "ttl": 3 }
+  ]
+}
