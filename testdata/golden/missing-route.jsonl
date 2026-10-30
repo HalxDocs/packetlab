@@ -1,0 +1,4 @@
+{"index":0,"atMs":0,"atNs":0,"kind":"run.started","summary":"simulation started"}
+{"index":1,"atMs":0,"atNs":0,"kind":"packet.created","nodeId":"host-a","packetId":"p-001","summary":"created ICMP echo request","details":{"dst":"10.0.2.20","icmp":"echo_request","protocol":"icmp","src":"","ttl":"64"}}
+{"index":2,"atMs":0,"atNs":0,"kind":"packet.dropped","nodeId":"host-a","packetId":"p-001","reason":"no_route","summary":"dropped: no route to destination","details":{"dst":"10.0.2.20"}}
+{"index":3,"atMs":0,"atNs":0,"kind":"run.completed","summary":"simulation completed","details":{"delivered":"0","dropped":"1","processed":"1"}}
