@@ -45,6 +45,9 @@ func TestBuildBundle(t *testing.T) {
 	if b.Result.Delivered != 2 || !b.Result.Completed {
 		t.Fatalf("result = %+v", b.Result)
 	}
+	if b.Result.Records != 25 {
+		t.Fatalf("result records = %d, want 25", b.Result.Records)
+	}
 }
 
 func TestBundleJSONRoundTrip(t *testing.T) {
@@ -74,6 +77,56 @@ func TestNodeInterfacesAreNested(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestNodeRoutesAreProjected(t *testing.T) {
+	b := buildTestBundle(t)
+	var host *Node
+	for i := range b.Topology.Nodes {
+		if b.Topology.Nodes[i].ID == "host-a" {
+			host = &b.Topology.Nodes[i]
+			break
+		}
+	}
+	if host == nil {
+		t.Fatal("host-a missing from topology")
+	}
+	if len(host.Routes) != 1 {
+		t.Fatalf("host-a routes = %d, want 1", len(host.Routes))
+	}
+	route := host.Routes[0]
+	if route.Network != "0.0.0.0/0" {
+		t.Errorf("network = %q", route.Network)
+	}
+	if route.NextHop != "10.0.1.1" {
+		t.Errorf("next hop = %q", route.NextHop)
+	}
+	if route.Interface != "host-a:eth0" {
+		t.Errorf("interface = %q", route.Interface)
+	}
+}
+
+func TestDirectRouteOmitsNextHop(t *testing.T) {
+	b := buildTestBundle(t)
+	var router *Node
+	for i := range b.Topology.Nodes {
+		if b.Topology.Nodes[i].ID == "router-r1" {
+			router = &b.Topology.Nodes[i]
+			break
+		}
+	}
+	if router == nil {
+		t.Fatal("router-r1 missing from topology")
+	}
+	for _, route := range router.Routes {
+		if route.Network == "10.0.2.0/24" {
+			if route.NextHop != "" {
+				t.Fatalf("direct route next hop = %q, want omitted", route.NextHop)
+			}
+			return
+		}
+	}
+	t.Fatal("router-r1 is missing its direct route to 10.0.2.0/24")
 }
 
 func TestLinkDelay(t *testing.T) {
