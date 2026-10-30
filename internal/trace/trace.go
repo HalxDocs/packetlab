@@ -34,6 +34,15 @@ type Node struct {
 	Kind       string      `json:"kind"`
 	Down       bool        `json:"down,omitempty"`
 	Interfaces []Interface `json:"interfaces"`
+	Routes     []Route     `json:"routes,omitempty"`
+}
+
+// Route is a static route entry shown in the node inspector.
+type Route struct {
+	Network   string `json:"network"`
+	NextHop   string `json:"nextHop,omitempty"`
+	Interface string `json:"interface"`
+	Metric    int    `json:"metric,omitempty"`
 }
 
 // Interface is an addressed attachment point.
@@ -107,6 +116,17 @@ func buildTopology(topo *topology.Topology) Topology {
 				Address: iface.Address.String(),
 				Subnet:  iface.Subnet().String(),
 			})
+		}
+		for _, route := range node.Routes {
+			r := Route{
+				Network:   route.Network.String(),
+				Interface: route.Interface,
+				Metric:    route.Metric,
+			}
+			if route.NextHop.IsValid() && !route.NextHop.IsUnspecified() {
+				r.NextHop = route.NextHop.String()
+			}
+			n.Routes = append(n.Routes, r)
 		}
 		out.Nodes = append(out.Nodes, n)
 	}
