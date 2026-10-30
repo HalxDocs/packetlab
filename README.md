@@ -25,7 +25,7 @@ viewer over real engine output; it does not simulate anything itself.
 
 ## Quick start
 
-Requires Go 1.26 or newer.
+Requires Go 1.26 or newer. The web workbench also requires Node 22 or newer.
 
 ```bash
 git clone https://github.com/HalxDocs/packetlab.git
@@ -53,6 +53,23 @@ Expected trace:
 ...
 2.000ms  packet.delivered  host-b       p-001  delivered to host-b
 ```
+
+## Web workbench
+
+The viewer replays the engine's event log on a topology canvas, a filterable
+timeline, and a packet inspector. It does not simulate anything itself, so the
+trace bundles must be generated first:
+
+```bash
+make traces
+cd web
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. Re-run `make traces` after changing a scenario or
+the engine. See [web/README.md](web/README.md) for the build, test, and design
+details.
 
 ## What PacketLab models
 
